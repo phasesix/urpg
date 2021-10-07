@@ -1,0 +1,50 @@
+{% extends 'characters/fragments/fragment_base.html' %}
+{% load characters_extras rules_extras i18n thumbnail %}
+
+{% block fragment %}
+    {% if object.extension_enabled.magic %}
+        {% if may_edit %}
+            <div class="row">
+                <div class="col-12">
+                    <button
+                            class="btn btn-primary btn-block float-end mt-3 mb-2 modal-trigger"
+                            data-bs-toggle="modal"
+                            data-bs-target=".character-modal"
+                            data-modal-title="{% trans 'Add a spell' %}"
+                            data-url="{% url 'characters:xhr_add_spell' pk=object.id %}">
+                        <i class="fa fa-magic text-warning"></i> Add a spell <small>({{ object.spell_points_available }} {% trans 'Spell Points' %})</small>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+        <div class="row masonry-container">
+            {% for s in object.characterspell_set.all %}
+                <div class="col col-md-6 col-xl-4 mb-2">
+                    <div
+                            data-sidebar-title="{{ s.name }}"
+                            data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=s.id model_name="CharacterSpell" sidebar_name="characterspell" %}"
+                            class="card mb-2 sidebar-trigger">
+                        <div class="card-header">
+                            <span class="text-muted float-end">{{ s.spell_type }} / {{ s.variant }}</span>
+                            {{ s }}
+                        </div>
+                        <div class="card-body">
+                            {% if s.is_ritual %}
+                                <span class="text-muted text-center">{% trans 'Ritual' %}</span>
+                            {% endif %}
+                            <p>
+                                {{ s.spell.rules }}
+                            </p>
+                            <i class="fas fa-dice-five fa-fw"></i> {% trans 'Attribute' %}: {{ s.spell_type.dominant_attribute_name|capfirst }}<br>
+                            <i class="fas fa-magic fa-fw"></i> {% trans 'Arcana' %}:
+                            {% for a in s.arcana_cost|to_range %}<i class="fas fa-magic text-warning"></i>{% endfor %}<br>
+                            <i class="fas fa-bolt fa-fw"></i> {% trans 'Power' %}: {% color_value_span s.power 4 %}<br>
+                            <i class="fas fa-arrows-alt-h fa-fw"></i> {% trans 'Range' %}: {% color_value_span s.range 4 %}<br>
+                            <i class="fas fa-hourglass fa-fw"></i> {% trans 'Actions' %}: {% color_value_span s.actions 3 invert=True %}<br>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

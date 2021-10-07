@@ -1,0 +1,215 @@
+{% load static i18n bootstrap4 compress %}<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% compress css %}
+        <link href="{% static 'fontawesome/css/all.min.css' %}" type="text/css" rel="stylesheet"/>
+        <link href="{% static 'css/switch.css' %}" type="text/css" rel="stylesheet"/>
+        <link href="{% static 'css/simplemde.min.css' %}" type="text/css" rel="stylesheet"/>
+        <link href="{% static 'css/animate.css' %}" type="text/css" rel="stylesheet"/>
+        <link href="{% static 'css/bootstrap-slider.min.css' %}" type="text/css" rel="stylesheet"/>
+        <link type="text/x-scss" href="{% static 'css/theme.scss' %}" rel="stylesheet"/>
+    {% endcompress %}
+
+    <title>{% block title %}Phase Six{% endblock %}</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="{% static 'favicon/browserconfig.xml' %}">
+    <meta name="theme-color" content="#ffffff">
+    {% block extraheader %}{% endblock %}
+</head>
+
+<body>
+
+<div id="sidebar-right" class="sidebar sidebar-right position-fixed bg-light h-100">
+    <header class="sidebar-header p-3 bg-light border-bottom overflow-auto">
+        <button type="button" class="sidebar-close float-end btn btn-outline-danger btn-sm close" aria-label="Close"><span aria-hidden="true" class="text-dark">&times;</span>
+        </button>
+        <h4 class="d-inline-block text-dark mb-0">{% trans 'Properties' %}</h4>
+    </header>
+    <div class="sidebar-content px-3 py-5">
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <div class="row pt-lg-3 pb-3">
+        <div class="col-md-10 offset-md-1">
+
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">Phase Six</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavBar"
+                            aria-controls="mainNavBar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNavBar">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button"
+                                   data-bs-toggle="dropdown">{% trans 'Play' %}</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item"
+                                           href="{% url 'characters:create_character' %}">{% trans 'Create Character' %}</a>
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="{% url 'characters:list' %}">{% trans 'My Characters' %}</a></li>
+                                    <li><a class="dropdown-item"
+                                           href="{% url 'campaigns:list' %}">{% trans 'My Campaigns' %}</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="{% url 'rulebook:detail' pk=1 %}">{% trans 'Rulebook' %}</a></li>
+                                    <li><a class="dropdown-item"
+                                           href="{% url 'bestiary:list' %}">{% trans 'Foes' %}</a></li>
+                                    <li><a class="dropdown-item"
+                                           href="{% url 'rules:template_list' %}">{% trans 'Templates' %}</a></li>
+                                </ul>
+                            </li>
+
+                            {% comment %}
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">{% trans 'Create' %}</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'homebrew:index' %}">{% trans 'Overview' %}</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'homebrew:create_item' %}">{% trans 'Create Item' %}</a></li>
+                                </ul>
+                            </li>
+                            {% endcomment %}
+
+                            {% comment %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'forum:index' %}">{% trans 'Forum' %}</a>
+                            </li>
+                            {% endcomment %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'contact' %}">{% trans 'Contact / Privacy' %}</a>
+                            </li>
+                        </ul>
+
+                        <ul class="navbar-nav justify-content-end">
+                            {% if user.is_authenticated %}
+                                <li class="nav-item dropdown" id="theme-dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                                            class="icon-cogs icon-large"></i> {{ request.user|capfirst }}</a>
+                                    <ul class="dropdown-menu">
+                                        {% if user.is_staff %}
+                                            <li><a class="dropdown-item"
+                                                   href="{% url 'admin:index' %}">{% trans 'Admin' %}</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item"
+                                                   href="{% url 'gmtools:extension_grid' type='riotgear' %}">{% trans 'Extension Grids' %}</a>
+                                            </li>
+                                            <li><a class="dropdown-item"
+                                                   href="{% url 'gmtools:template_statistics' %}">{% trans 'Template Statistics' %}</a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                        {% endif %}
+                                        <li><a class="dropdown-item"
+                                               href="{% url 'logout' %}?next=/">{% trans 'Logout' %}</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li class="nav-item  me-1 active">
+                                    <a class="nav-link" href="{% url 'login' %}?next=/">{% trans 'Login' %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+
+                        <form class="d-flex" method="post"
+                              action="{% url 'set_language' %}?next={{ request.path }}">
+                            {% csrf_token %}
+                            <button name="language" value="de"
+                                    class="btn btn-sm btn-outline-success my-2 me-1 my-sm-0{% if request.LANGUAGE_CODE == 'de' %} active{% endif %}">
+                                DE
+                            </button>
+                            <button name="language" value="en"
+                                    class="btn btn-sm btn-outline-success my-2 my-sm-0{% if request.LANGUAGE_CODE == 'en' %} active{% endif %}">
+                                EN
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    {% block belownav %}
+        <div class="default-belownav"></div>
+    {% endblock %}
+
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            {% bootstrap_messages messages %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% compress js %}
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'fontawesome/js/all.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+    <script src="{% static 'js/jquery.matchHeight.js' %}"></script>
+    <script src="{% static 'js/dropzone.min.js' %}"></script>
+    <script src="{% static 'js/simplemde.min.js' %}"></script>
+    <script src="{% static 'js/featherlight.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-slider.min.js' %}"></script>
+    <script src="{% static 'js/tilt.jquery.min.js' %}"></script>
+{% endcompress %}
+
+<script>
+    $(document).ready(function () {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    });
+</script>
+{% block javascript %}{% endblock %}
+
+</body>
+</html>

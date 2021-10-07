@@ -1,0 +1,134 @@
+{% extends 'characters/fragments/fragment_base.html' %}
+{% load i18n characters_extras %}
+
+{% block fragment %}
+    <div class="row">
+
+        <div class="col-12 col-md-4 mb-5">
+            <div class="card h-100">
+                <div class="card-header text-center">
+                    {% trans 'Combat' %}
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-hourglass text-info" data-bs-toggle="popover" data-bs-trigger="hover"
+                           title="{% trans 'Actions' %}"
+                           data-bs-content="{% trans 'The amount of actions you can use in combat.' %}"></i>
+                        {% trans 'Actions' %}
+                        <span class="float-end">{% color_value_span object.actions 4 %}</span></li>
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-shield-alt text-success" data-bs-toggle="popover"
+                           data-bs-trigger="hover" title="{% trans 'Ballistic Protection' %}"
+                           data-bs-content="{% trans 'Protects you from ballistic shots at the defense roll.' %}"></i>
+                        {% trans 'Protection' %}
+                        <span class="float-end">{% color_value_span object.ballistic_protection 6 %}</span></li>
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-running text-success" data-bs-toggle="popover" data-bs-trigger="hover"
+                           title="{% trans 'Evasion' %}"
+                           data-bs-content="{% trans 'The amount of evasion dice to evade being hit in combat.' %}"></i>
+                        {% trans 'Evasion' %}
+                        <span class="float-end">{% color_value_span object.evasion 6 %}</span></li>
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-eye-slash text-danger" data-bs-toggle="popover" data-bs-trigger="hover"
+                           title="{% trans 'Concealment' %}"
+                           data-bs-content="{% trans 'This is the highest concealment among your equipment. It is relevant if somebody searches you for your equipment.' %}"></i>
+                        {% trans 'Concealment' %}
+                        <span class="float-end">{% color_value_span object.max_concealment 4 invert=True %}</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-5">
+            <div class="card h-100 text-center">
+                <div class="card-header">
+                    {% trans 'Status' %}
+                </div>
+                <div class="card-body">
+                    <div class="sidebar-trigger" data-sidebar-title="{% trans 'Wounds' %}"
+                         data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=object.id model_name="Character" sidebar_name="wounds" %}">
+                        {% for i in object.health|to_range %}
+                            <i class="fas fa-heart text-danger" title="{% trans 'Health' %}"></i>
+                        {% endfor %}
+                        {% for i in object.wounds_taken|to_range %}
+                            <i class="far fa-heart text-danger" title="{% trans 'Wound' %}"></i>
+                        {% endfor %}
+                        {% for i in object.boost|to_range %}
+                            <i class="fas fa-heart text-info" title="{% trans 'Boost' %}"></i>
+                        {% endfor %}
+                    </div>
+
+                    {% if object.extension_enabled.magic %}
+                        <div class="sidebar-trigger" data-sidebar-title="{% trans 'Magic' %}"
+                             data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=object.id model_name="Character" sidebar_name="magic" %}">
+                            {% for i in object.arcana|to_range %}
+                                <i class="fas fa-magic text-warning" ></i>
+                            {% endfor %}
+                            {% for i in object.arcana_used|to_range %}
+                                <i class="fas fa-magic text-dark" ></i>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if object.extension_enabled.horror %}
+                        <div class="sidebar-trigger" data-sidebar-title="{% trans 'Stress' %}"
+                             data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=object.id model_name="Character" sidebar_name="horror" %}">
+                            {% for i in object.stress|to_range %}
+                                <i class="fas fa-meh text-warning" title="{% trans 'Stress' %}"></i>
+                            {% endfor %}
+                            {% for i in object.available_stress|to_range %}
+                                <i class="far fa-meh text-warning" title="{% trans 'Possible Stress' %}"></i>
+                            {% endfor %}
+                        </div>
+
+                        <div class="sidebar-trigger" data-sidebar-title="{% trans 'Stress' %}"
+                             data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=object.id model_name="Character" sidebar_name="horror" %}">
+                            {% for q in object.quirks.all %}
+                                <i class="fas fa-frown text-dark" title="{{ q }}"></i>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="sidebar-trigger mt-2" data-sidebar-title="{% trans 'Wounds' %}"
+                         data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=object.id model_name="Character" sidebar_name="wounds" %}">
+                        {% for cse in object.characterstatuseffect_set.all %}
+                            <span class="fa-layers fa-fw fa-3x">
+                                <i title="{{ cse }}: {{ cse.value }}" class="{{ cse.status_effect.fa_icon_class }}"></i>
+                                <span class="fa-layers-counter bg-danger">{{ cse.value }}</span>
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-5 sidebar-trigger" data-sidebar-title="{% trans 'Dice' %}" data-sidebar-url="{% url 'characters:xhr_detail_sidebar' pk=object.id model_name="Character" sidebar_name="dice" %}">
+            <div class="card h-100">
+                <div class="card-header text-center">
+                    {% trans 'Dice' %}
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-dice-five text-warning" data-bs-toggle="popover" title="{% trans 'Minimum Roll' %}"></i>
+                        {% trans 'Minimum Roll' %}
+                        <span class="float-end">{% color_value_span 5 5 invert=True %}+</span>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-dice-six text-success" title="{% trans 'Bonus Dice' %}"></i>
+                        {% trans 'Bonus Dice' %}
+                        <span class="float-end">{% color_value_span object.bonus_dice_free 3 %} / {% color_value_span object.bonus_dice 3 %}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-dice-four text-danger" title="{% trans 'Destiny Dice' %}"></i>
+                        {% trans 'Destiny Dice' %}
+                        <span class="float-end">{% color_value_span object.destiny_dice_free 3 %} / {% color_value_span object.destiny_dice 3 %}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-fw fa-dice-one text-info" title="{% trans 'Rerolls' %}"></i>
+                        {% trans 'Rerolls' %}
+                        <span class="float-end">{% color_value_span object.rerolls_free 3 %} / {% color_value_span object.rerolls 3 %}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
